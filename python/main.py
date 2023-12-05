@@ -1,7 +1,7 @@
 import os
 import sys
 
-from tasks.day3.task2 import run as task
+from tasks.day4.task2 import run as task
 
 def main():
   day_number = sys.argv[1]
