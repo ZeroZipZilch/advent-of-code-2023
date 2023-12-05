@@ -6,25 +6,57 @@ from tasks.day3.Cell import Cell
 def run(input_rows: list[str]):
   grid = list()
 
+  row_numbers: list[NumberCoordinates] = []
+  row_symbols: list[NumberCoordinates] = []
+  adjecent_numbers: list[NumberCoordinates] = []
+
   for (row_number, row) in enumerate(input_rows):
-    (numbers, cells) = parse_grid(row_number, input_rows.__len__, row)
+    cells = parse_grid(row_number, input_rows.__len__, row, row_numbers, row_symbols)
 
     grid.append(cells)
 
+    for symbol in row_symbols:
+      check_adjencent_for_numbers(symbol, row_numbers, adjecent_numbers)
+    
+  total = 0
+
+  for adjecent_number in adjecent_numbers:
+    total = total + adjecent_number.value
+    # print(adjecent_number.row_number, adjecent_number.start_x, adjecent_number.end_x, adjecent_number.value)
+  
+  print("total", total)
+  # for number in row_numbers:
+  #     print(number.row_number, number.start_x, number.end_x, number.value)
+    
+  # for symbol in row_symbols:
+  #   print(symbol.row_number, symbol.start_x, symbol.end_x, symbol.value)
+
+  print("done")
+
+
+def check_adjencent_for_numbers(symbol: NumberCoordinates, numbers: list[NumberCoordinates], adjecent_numbers: list[NumberCoordinates]):
     for number in numbers:
-      print(number.row_number, number.start_x, number.end_x, number.value)
+      adjecent_start = number.start_x - 1
+      adjecent_end = number.end_x + 1
 
-    for cell in cells:
-      if check_adjencent_for_symbols(grid, cell):
-        print(cell.coordinates.value)
+      adjecent_horizontal = symbol.start_x >= adjecent_start and symbol.end_x <= adjecent_end
+      adjecent_vertical = symbol.row_number >= number.row_number - 1 and symbol.row_number <= number.row_number + 1
+
+      if adjecent_horizontal and adjecent_vertical:
+        adjecent_number = NumberCoordinates()
+
+        adjecent_number.value = number.value
+        adjecent_number.start_x = number.start_x
+        adjecent_number.end_x = number.end_x
+        adjecent_number.row_number = number.row_number
+
+        if not object_exists_in_list(adjecent_number, adjecent_numbers):
+          adjecent_numbers.append(adjecent_number)
+          return True
 
 
-def check_adjencent_for_symbols(grid, cell):
-  pass
-
-def parse_grid(row_number, max_rows, row):
-  row_numbers = []
-  number_sequence = ''
+def parse_grid(row_number, max_rows, row, row_numbers: list[NumberCoordinates], row_symbols: list[NumberCoordinates]):
+  current_sequence = ''
   row_cells = list()
 
   character: str
@@ -44,12 +76,19 @@ def parse_grid(row_number, max_rows, row):
     cell.column_number = column_number
     cell.character = character
 
-    if character == '.':
-      assign_coordinates_to_adjecent_number_cells(number_sequence, row_number, column_number, row_cells, row_numbers)
+    if character == '.' or re.match('[\W]', character) or (re.match('[\d]', character) and re.match('[\W]', current_sequence)):
+      assign_coordinates_to_adjecent_number_cells(current_sequence, row_number, column_number, row_cells, row_numbers, row_symbols)
 
-      number_sequence = ''
+      if character != '.':
+        current_sequence = character
+      else:
+        current_sequence = ''
     else:
-      number_sequence = number_sequence + character
+      current_sequence = current_sequence + character
+
+      if re.match('[\d]', current_sequence) and column_number == len(row) - 1:
+        assign_coordinates_to_adjecent_number_cells(current_sequence, row_number, column_number, row_cells, row_numbers, row_symbols)
+        current_sequence = ''
 
       if re.match('[\d]', character):
         cell.is_number = True
@@ -58,22 +97,41 @@ def parse_grid(row_number, max_rows, row):
 
     row_cells.append(cell)
   
-  return row_numbers, row_cells
+  return row_cells
 
-def assign_coordinates_to_adjecent_number_cells(number_sequence, row_number, column_number, row_cells: list[Cell], row_numbers: list[NumberCoordinates]):
-  if number_sequence == '':
+def assign_coordinates_to_adjecent_number_cells(current_sequence, row_number, column_number, row_cells: list[Cell], row_numbers: list[NumberCoordinates], row_symbols: list[NumberCoordinates]):
+  if current_sequence == '':
     return
   
-  number_coordinates = NumberCoordinates()
+  if re.match('[\d]', current_sequence):
+    number_coordinates = NumberCoordinates()
 
-  number_coordinates.value = int(number_sequence)
-  number_coordinates.row_number = row_number
-  number_coordinates.start_x = column_number - len(number_sequence)
-  number_coordinates.end_x = column_number - 1
+    number_coordinates.value = int(current_sequence)
+    number_coordinates.row_number = row_number
+    number_coordinates.start_x = column_number - len(current_sequence)
+    number_coordinates.end_x = column_number - 1
 
-  row_numbers.append(number_coordinates)
+    row_numbers.append(number_coordinates)
+  elif re.match('[\W]', current_sequence):
+    symbol_coordinates = NumberCoordinates()
 
-  for i in range(1, len(number_sequence)):
-    row_cells[column_number - i].coordinates.start_x = column_number - len(number_sequence)
+    symbol_coordinates.value = current_sequence
+    symbol_coordinates.row_number = row_number
+    symbol_coordinates.start_x = column_number - len(current_sequence)
+    symbol_coordinates.end_x = column_number - 1
+
+    # If row_symbols doesn't contain symbol_coordinates, add it
+    if not object_exists_in_list(symbol_coordinates, row_symbols):
+      row_symbols.append(symbol_coordinates)
+
+  for i in range(1, len(current_sequence)):
+    row_cells[column_number - i].coordinates.start_x = column_number - len(current_sequence)
     row_cells[column_number - i].coordinates.end_x = column_number - 1
-    row_cells[column_number - i].coordinates.value = number_sequence
+    row_cells[column_number - i].coordinates.value = current_sequence
+
+def object_exists_in_list(object, list):
+  for item in list:
+    if object.end_x == item.end_x and object.start_x == item.start_x and object.row_number == item.row_number and object.value == item.value:
+      return True
+  
+  return False

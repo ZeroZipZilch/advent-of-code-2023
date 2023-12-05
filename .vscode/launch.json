@@ -11,8 +11,8 @@
       "program": "python/main.py",
       "args": [
         "3",
-        "1",
-        "test"
+        "2",
+        "zero"
       ],
       "console": "integratedTerminal",
       "justMyCode": true
