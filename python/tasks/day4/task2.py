@@ -1,53 +1,31 @@
 import re
 
-instance_counter = dict()
-
 def run(scratchcards: list[str]):
-  card_total = 0
-
-  card_total = parse_cards(scratchcards[0], 0, scratchcards)
-
-
+  card_total = parse_cards(scratchcards)
 
   print(card_total)
 
-def parse_cards(card: str, index: int, scratchcards: list[str]) -> int:
-  card = re.split('Card [ 0-9]+: ', card)[1]
+def parse_cards(scratchcards: list[str]) -> int:
+  occurences = {}
+  total = [1] * len(scratchcards)
 
-  # 1 -> 2,3,4,5
-  # 2 -> 3,4
-  # 2 -> 3,4
-  # 3 -> 4,5
-  # 3 -> 4,5
-  # 3 -> 4,5
-  # 3 -> 4,5
-  # 4 -> 5
-  # 4 -> 5
-  # 4 -> 5
-  # 4 -> 5
-  # 4 -> 5
-  # 4 -> 5
-  # 4 -> 5
-  # 4 -> 5
-  # 4 -> 5
-  # 5 -> -
-  # 5 -> -
-  # 5 -> -
-  # 5 -> -
-  # 5 -> -
-  # 5 -> -
-  # 5 -> -
-  # 5 -> -
-  # 5 -> -
-  # 5 -> -
-  # 5 -> -
-  # 5 -> -
-  # 5 -> -
-  # 5 -> -
-  # 6 -> -
-  
-  won_the_next_x_cards = calculate_winnings(card)
-  
+  for i, scratchcard in enumerate(scratchcards):
+    card_number, card = re.match('Card[ ]+([\d]+): (.+)', scratchcard).groups()
+    card_number = int(card_number)
+
+    won_the_next_x_cards = calculate_winnings(card)
+    occurences[i + 1] = occurences.get(i + 1, 0) + total[i]
+    print("Occurences: ", occurences)
+
+    if won_the_next_x_cards > 0:
+      print("Entering loop for i value {index} and will loop until index {until}".format(index = i, until = i + won_the_next_x_cards))
+      
+    for j in range(won_the_next_x_cards):
+      print("Increasing total for index {index} by a {increase}".format(index = i + j + 1, increase = total[i]))
+      total[i + j + 1] = total[i + j + 1] + total[i]
+      print("Total", total)
+
+  return sum(total[:i + 1])
 
 
 def calculate_winnings(card):
