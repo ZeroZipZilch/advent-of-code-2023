@@ -17,7 +17,7 @@ map_order = ["seed_to_soil", "soil_to_fertilizer", "fertilizer_to_water", "water
 def run(input_rows: list[str]):
   current_map = None
 
-  for (i, row) in enumerate(input_rows):
+  for row in input_rows:
     if row == '':
       continue
 
@@ -31,7 +31,6 @@ def run(input_rows: list[str]):
       destination_range_start, source_range_start, range_length = map(int, re.match('([\d]+) ([\d]+) ([\d]+)', row).groups())
 
       map_mapper_value = dict(
-        destination_range_start = destination_range_start,
         source_range_start = source_range_start,
         total = range_length,
         diff = destination_range_start - source_range_start 
