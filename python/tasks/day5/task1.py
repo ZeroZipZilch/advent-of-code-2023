@@ -37,9 +37,8 @@ def run(input_rows: list[str]):
         diff = destination_range_start - source_range_start 
       )
 
-      for i in range(0, range_length):
-        if map_mapper_value not in map_mapper[current_map]:
-          map_mapper[current_map].append(map_mapper_value)
+      if map_mapper_value not in map_mapper[current_map]:
+        map_mapper[current_map].append(map_mapper_value)
   
   
   seeds = get_seeds_over_map(seeds)
