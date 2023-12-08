@@ -1,6 +1,8 @@
 import re
 import sys
 
+import numpy as np
+
 seeds = list()
 
 map_mapper = {
@@ -33,60 +35,44 @@ def run(input_rows: list[str]):
       destination_range_start, source_range_start, range_length = map(int, re.match('([\d]+) ([\d]+) ([\d]+)', row).groups())
 
       map_mapper_value = dict(
+        destination_range_start = destination_range_start,
         source_range_start = source_range_start,
-        total = range_length,
-        diff = destination_range_start - source_range_start 
+        length = range_length,
+        diff = source_range_start - destination_range_start
       )
 
       if map_mapper_value not in map_mapper[current_map]:
         map_mapper[current_map].append(map_mapper_value)
   
+  print(get_lowest_location_value(seeds))
+    
+
+
+def get_lowest_location_value(seeds: list[int]) -> int:
+  seeds = np.reshape(seeds, (-1, 2))
+  location_value = 0
   
-  closest_location = iterate_seeds(seeds, closest_location)
-    
-  print(closest_location)
+  for value in range(0, 10000000000):
+    location_value = value
 
-
-def get_seeds_over_map(seed_number: int, closest_location: int) -> int:
-  seed_location = seed_number
-
-  for current_map_index in range(len(map_order)):
-    current_map = map_order[current_map_index]
-    
-    for j in range(len(map_mapper[current_map])):
-      is_seed_in_start_range = seed_location >= map_mapper[current_map][j]["source_range_start"] and seed_location < map_mapper[current_map][j]["source_range_start"] + map_mapper[current_map][j]["total"]
-
-      if is_seed_in_start_range:
-        seed_location = seed_location + map_mapper[current_map][j]["diff"]
-        break
-    
-  if seed_location < closest_location:
-    closest_location = seed_location
-  
-  return closest_location
-
-
-def iterate_seeds(seeds: list[int], closest_location: int) -> int:
-  i = 0
-  seed_goal = seeds[i] + seeds[i + 1]	
-  seed_that_changed_me = 0
-
-  while True:
-    if seeds[i] >= seed_goal:
-      i += 2
-
-      if i + 1 >= len(seeds):
-        break
-
-      seed_goal = seeds[i] + seeds[i + 1]	 - 1
-    else:
-      new_closest_location = get_seeds_over_map(seeds[i], closest_location)
-
-      if new_closest_location == closest_location:
-        seeds[i] += 1
-      else:
-        seed_that_changed_me = seeds[i]
+    for current_map_index in range(len(map_order) - 1, -1, -1):
+      current_map = map_mapper[map_order[current_map_index]]
       
-        closest_location = new_closest_location
-    
-  return closest_location
+      for map_range in current_map:
+        is_value_in_destination_range = value >= map_range["destination_range_start"] and value <= map_range["destination_range_start"] + map_range["length"]
+
+        if is_value_in_destination_range:
+          value = value + map_range["diff"]
+          
+          if current_map_index == 0 and is_value_in_seed_range(value, seeds):
+            return location_value
+          else:
+            break
+              
+
+def is_value_in_seed_range(value: int, seeds: list[int]) -> bool:
+  for seed in seeds:
+    if value >= seed[0] and value <= seed[0] + seed[1]:
+      return True
+  
+  return False
