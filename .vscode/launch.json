@@ -10,8 +10,8 @@
       "request": "launch",
       "program": "python/main.py",
       "args": [
-        "4",
-        "2",
+        "7",
+        "1",
         "test"
       ],
       "console": "integratedTerminal",
