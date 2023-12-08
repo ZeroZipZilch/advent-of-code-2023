@@ -45,7 +45,7 @@ def run(input_rows: list[str]):
   print(min(seeds))
 
 
-def get_seeds_over_map(seeds: [int]) -> int:
+def get_seeds_over_map(seeds: list[int]) -> int:
   for current_map_index in range(len(map_order)):
     current_map = map_order[current_map_index]
     
