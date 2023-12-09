@@ -10,9 +10,9 @@
       "request": "launch",
       "program": "python/main.py",
       "args": [
-        "7",
-        "1",
-        "test"
+        "9",
+        "2",
+        "zero"
       ],
       "console": "integratedTerminal",
       "justMyCode": true
