@@ -147,3 +147,20 @@ More realistic test case for [Note 3](#note-3):
 . L - - J L - - J . 7
 . . . . . . . . . . 8
 0 1 2 3 4 5 6 7 8 9 
+
+
+
+  0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9
+0 F F A F S F A F A F A F A F A F - - - A 0
+1 L | L J | | | | | | | | | | | | F - - J 1
+2 F L - A L J L J | | | | | | L J L - A A 2
+3 F - - J F - - A | | L J L J A F A F J - 3
+4 L - - - J F - J L J 1 | | - F J L J J A 4
+5 | F | F - J F - - - A F A - L A L | A | 5
+6 | F F J F A L A F - J F A | J L - - - A 6
+7 A - L - J L A | | F A | L A F - A F A | 7
+8 L 0 L A L F J | | | | | F J L A | | L J 8
+9 L A J L J L - J L J L J L - - J L J 0 L 9
+  0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9
+
+  
