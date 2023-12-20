@@ -1,34 +1,51 @@
+import copy
+from functools import cache
+import hashlib
+import pathlib
+from json import dumps as json_dumps
 import re
 import sys
 import itertools
 import math
 import collections
+from tqdm import tqdm
 
 
 def run(input_rows: list[str]):
   rows = [list(row) for row in input_rows]
-  
-  for _ in range(100):
-    tilt_north(rows)
-    tilt_west(rows)
-    tilt_south(rows)
-    tilt_east(rows)
+  cycle_cache = {}
+  cycle_order = []
 
-    for row in rows:
-      print(''.join(row))
-    
-    print(" ")
-    
-    total = calculate_load(rows)
-    
-    print(" ")
-    print(" ")
+
+  # with pathlib.Path('python/tasks/day14/output').open("w") as f:
+  #   f.write('')
+  # with pathlib.Path('python/tasks/day14/iterations-output').open("w") as f:
+  #   f.write('')
+
+  #   total = calculate_load(rows)
+  #   f.write(f"BEFORE START - TOTAL: {total}\n")
+
+  #   f.write('\n'.join([''.join(row) for row in rows]))
+  #   f.write('\n')
+  #   f.write('\n')
+  
+  for _ in tqdm(range(1000)):
+    rows = cycle(copy.deepcopy(rows))
 
   total = calculate_load(rows)
 
   
   
   print(total)
+
+
+def cycle(rows):
+  rows = tilt_north(rows)
+  rows = tilt_west(rows)
+  rows = tilt_south(rows)
+  rows = tilt_east(rows)
+
+  return rows
 
 
 def tilt_north(rows):
@@ -51,6 +68,8 @@ def tilt_north(rows):
 
         first_possible_row += 1
 
+  return rows
+
 
 def tilt_west(rows):
   row_length = len(rows[0])
@@ -71,6 +90,8 @@ def tilt_west(rows):
         rows[y][first_possible_column] = "O"
         
         first_possible_column += 1
+
+  return rows
 
 
 def tilt_south(rows):
@@ -93,6 +114,8 @@ def tilt_south(rows):
         
         first_possible_row -= 1
 
+  return rows
+
 
 def tilt_east(rows):
   row_length = len(rows[0])
@@ -113,6 +136,8 @@ def tilt_east(rows):
         rows[y][first_possible_column] = "O"
         
         first_possible_column -= 1
+
+  return rows
 
 
 def calculate_load(rows):
