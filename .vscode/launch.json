@@ -10,7 +10,7 @@
       "request": "launch",
       "program": "python/main.py",
       "args": [
-        "9",
+        "15",
         "2",
         "zero"
       ],
